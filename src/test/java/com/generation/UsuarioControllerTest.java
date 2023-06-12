@@ -1,14 +1,14 @@
-package com.generation;
-
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -19,9 +19,12 @@ public class UsuarioControllerTest {
 
     @Test
     public void testGetUsuarios() {
-        ResponseEntity<String> response = restTemplate.withBasicAuth("juliana", "1234")
-                .getForEntity("/usuarios", String.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth("juliana", "1234");
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
+        ResponseEntity<String> response = restTemplate.exchange("/usuarios", HttpMethod.GET,
+                new HttpEntity<>(headers), String.class);
 
         Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assert.assertNotNull(response.getBody());
